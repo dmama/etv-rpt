@@ -1,0 +1,275 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>ch.vd.unireg</groupId>
+	<artifactId>unireg-rpt</artifactId>
+	<version>19R3.A.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>unireg - Rpt</name>
+
+	<properties>
+		<unireg-project.version>19R3.A.0-SNAPSHOT</unireg-project.version>
+
+		<!-- Database settings -->
+		<oracle.version>12.1.0.2.0</oracle.version>
+		<oracle.jdbc.dataSourceClassName>oracle.jdbc.xa.client.OracleXADataSource</oracle.jdbc.dataSourceClassName>
+		<oracle.hibernate.dialect>ch.vd.unireg.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
+		<oracle.hibernate.query.substitutions>true 1, false 0</oracle.hibernate.query.substitutions>
+
+		<!-- Web application versions (voir section "References" de https://tomcat.apache.org/tomcat-8.0-doc/index.html) -->
+		<servlet.version>3.1.0</servlet.version>
+
+		<!-- Editique -->
+		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
+		<editique.locale.sync.attente.timeout>120</editique.locale.sync.attente.timeout>
+		<!-- Délai d'attente avant qu'une impression locale pas nécessairement synchrone soit re-routée vers l'inbox du demandeur -->
+		<editique.locale.async.attente.delai>15</editique.locale.async.attente.delai>
+		<log4j.version>2.11.2</log4j.version>
+		<cxf.version>3.3.1</cxf.version>
+		<brave.version>4.16.2</brave.version>
+
+	</properties>
+
+
+	<dependencies>
+
+		<!-- Project -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>unireg-business</artifactId>
+			<version>${unireg-project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>unireg-core</artifactId>
+			<version>${unireg-project.version}</version>
+		</dependency>
+
+		<!-- Librairie brave to capture latency information  -->
+		<dependency>
+			<groupId>io.zipkin.brave</groupId>
+			<artifactId>brave-spring-beans</artifactId>
+			<version>${brave.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.brave</groupId>
+			<artifactId>brave-context-slf4j</artifactId>
+			<version>${brave.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-integration-tracing-brave</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.brave</groupId>
+			<artifactId>brave-instrumentation-servlet</artifactId>
+			<version>${brave.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+				<!-- exclusion de geronimo javamail : ce package redéfini les classes javax.mail.* et après l'envoi des emails marche pas bien -->
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-javamail_1.4_spec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-activation_1.1_spec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Librairie servlet API-->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
+		</dependency>
+
+		<!-- implémentation log4j2 pour slf4j -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.4</version>
+			<scope>compile</scope>
+		</dependency>
+
+	</dependencies>
+
+	<!-- Build plugins and sources -->
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+		</testResources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M2</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.3</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.8</source>
+					<target>1.8</target>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.10</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/generated</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/classes/libs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<mode>development</mode>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>libs/</classpathPrefix>
+							<Main-Class>ch.vd.unireg.config.BatchRptRunnerApp</Main-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<finalName>unireg-rpt-batch-${project.version}</finalName>
+					<archive>
+						<manifest>
+							<mainClass>ch.vd.unireg.config.BatchRptRunnerApp</mainClass>
+						</manifest>
+					</archive>
+					<descriptors>
+						<descriptor>release.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+<!--  https://stackoverflow.com/questions/21474223/xmlbeandefinitionstoreexception-cannot-find-the-declaration-of-element-beans/21474944-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<transformers>
+								<transformer implementation=
+										             "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>ch.vd.unireg.config.BatchRptRunnerApp</mainClass>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.handlers</resource>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.schemas</resource>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

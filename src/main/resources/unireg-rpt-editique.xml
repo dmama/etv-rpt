@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="evenementEditiqueSender" class="ch.vd.unireg.editique.impl.EvenementEditiqueSenderImpl">
+		<property name="serviceDestinationImpression" value="${extprop.jms.queue.editique.output}" />
+		<property name="serviceDestinationCopieConforme" value="${extprop.jms.queue.editique.copie.conforme.output}" />
+		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
+		<property name="esbMessageValidator" ref="esbMessageValidator" />
+	</bean>
+
+	<bean id="retourImpressionStorageService" class="ch.vd.unireg.editique.impl.EditiqueRetourImpressionStorageServiceImpl">
+		<property name="cleanupPeriod" value="${editique.locale.sync.attente.timeout}" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="editiqueService" class="ch.vd.unireg.editique.impl.EditiqueServiceImpl" lazy-init="true">
+		<property name="sender" ref="evenementEditiqueSender" />
+		<property name="retourImpressionStorage" ref="retourImpressionStorageService" />
+		<property name="syncReceiveTimeout" value="${editique.locale.sync.attente.timeout}" />
+		<property name="asyncReceiveDelay" value="${editique.locale.async.attente.delai}" />
+		<property name="hoursRetourImpressionExpiration" value="${extprop.async.print.expiration.hours}" />
+		<property name="inboxService" ref="inboxService" />
+	</bean>
+
+	<bean id="editiqueCompositionService" class="ch.vd.unireg.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">
+		<property name="editiqueService" ref="editiqueService" />
+		<property name="impressionDIPPHelper" ref="impressionDIPPHelper" />
+		<property name="impressionDIPMHelper" ref="impressionDIPMHelper"/>
+		<property name="impressionLRHelper" ref="impressionLRHelper" />
+		<property name="impressionSommationDIPPHelper" ref="impressionSommationDIPPHelper" />
+		<property name="impressionSommationDIPMHelper" ref="impressionSommationDIPMHelper" />
+		<property name="impressionSommationLRHelper" ref="impressionSommationLRHelper" />
+		<property name="impressionNouveauxDossiersHelper" ref="impressionNouveauxDossiersHelper" />
+		<property name="impressionConfirmationDelaiPPHelper" ref="impressionConfirmationDelaiPPHelper" />
+		<property name="impressionLettreDecisionDelaiPMHelper" ref="impressionLettreDecisionDelaiPMHelper"/>
+		<property name="impressionLettreDecisionDelaiPPHelper" ref="impressionLettreDecisionDelaiPPHelper"/>
+		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />
+		<property name="impressionLettreBienvenueHelper" ref="impressionLettreBienvenueHelper"/>
+		<property name="impressionRappelHelper" ref="impressionRappelHelper"/>
+		<property name="impressionQSNCHelper" ref="impressionQSNCHelper"/>
+		<property name="impressionRappelQSNCHelper" ref="impressionRappelQSNCHelper"/>
+		<property name="impressionAutorisationRadiationRCHelper" ref="impressionAutorisationRadiationRCHelper"/>
+		<property name="signatairesAutorisationRadiationRC" ref="signatairesAutorisationRadiation"/>
+		<property name="impressionDemandeBilanFinalHelper" ref="impressionDemandeBilanFinalHelper"/>
+		<property name="impressionLettreTypeInformationLiquidationHelper" ref="impressionLettreTypeInfoLiquidationHelper"/>
+		<property name="impressionDemandeDegrevementICIHelper" ref="impressionDemandeDegrevementICIHelper"/>
+		<property name="impressionRappelDemandeDegrevementICIHelper" ref="impressionRappelDemandeDegrevementICIHelper"/>
+		<property name="evenementDocumentSortantService" ref="evenementDocumentSortantService"/>
+		<property name="impressionFourreNeutreHelper" ref="impressionFourreNeutreHelper"/>
+		<property name="impressionDelaiQSNCHelper" ref="impressionDelaiQSNCHelper"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="signatairesAutorisationRadiation" class="ch.vd.unireg.documentfiscal.Signataires">
+		<constructor-arg>
+			<util:list>
+				<bean class="ch.vd.unireg.documentfiscal.Signataires$VisaFonction">
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.1.visa}"/>
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.1.fonction}"/>
+				</bean>
+				<bean class="ch.vd.unireg.documentfiscal.Signataires$VisaFonction">
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.2.visa}"/>
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.2.fonction}"/>
+				</bean>
+			</util:list>
+		</constructor-arg>
+	</bean>
+
+<!--	<bean id="delayedDocumentDownloadController" class="ch.vd.unireg.document.DelayedDocumentDownloadController">
+		<property name="delayedDownloadService" ref="delayedDownloadService"/>
+		<property name="editiqueDownloadService" ref="editiqueDownloadService"/>
+	</bean>-->
+
+</beans>

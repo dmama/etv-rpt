@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="reqdesEventListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainerWithMasterSwitch" parent="esbMessageListener">
+		<property name="handler" ref="reqdesEventHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.reqdes.event.input}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.reqdes.event.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}" />
+		<property name="masterSwitch" value="${extprop.reqdes.enabled}"/>
+		<property name="description" value="Réception des évènements de l'application notaires eReqDes"/>
+	</bean>
+
+	<bean id="reqdesEventHandler" class="ch.vd.unireg.evenement.reqdes.reception.ReqDesEventHandler">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="evenementDAO" ref="reqdesEvenementDAO"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="processor" ref="reqdesEventProcessor"/>
+	</bean>
+
+	<bean id="reqdesEventProcessor" class="ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesProcessorImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="adresseService" ref="adresseService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="metierService" ref="metierService"/>
+	</bean>
+
+	<bean id="evtReqDesRetryProcessor" class="ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesRetryProcessorImpl">
+		<property name="mainProcessor" ref="reqdesEventProcessor"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+</beans>

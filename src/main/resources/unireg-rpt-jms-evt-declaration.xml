@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="evenementDeclarationDispatchingEsbHandler" class="ch.vd.unireg.evenement.EvenementNamespaceDispatchingEsbHandler">
+		<property name="handlers">
+			<util:map>
+				<entry key="http://www.vd.ch/fiscalite/unireg/event/di/input/1" value-ref="evenementDeclarationEsbHandlerV1"/>
+				<entry key="http://www.vd.ch/fiscalite/unireg/event/declaration/2" value-ref="evenementDeclarationEsbHandlerV2"/>
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="evenementDeclarationListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="evenementDeclarationDispatchingEsbHandler" />
+		<property name="destinationName" value="${extprop.jms.queue.evtDeclaration.input}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.input.enabled}" />
+		<property name="description" value="Réception des évènements de quittance des DI electroniques"/>
+	</bean>
+
+	<bean id="evenementDeclarationEsbHandlerV1" class="ch.vd.unireg.evenement.di.EvenementDeclarationEsbHandlerV1">
+		<property name="handler" ref="evenementDeclarationService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="evenementDeclarationEsbHandlerV2" class="ch.vd.unireg.evenement.declaration.EvenementDeclarationEsbHandlerV2">
+		<property name="handlers">
+			<util:map>
+				<entry key="ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck" value-ref="quittancementHandler"/>
+			</util:map>
+		</property>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+
+	<bean id="quittancementHandler" class="ch.vd.unireg.evenement.declaration.QuittancementDeclaration">
+		<property name="bamMessageSender" ref="bamMessageSender"/>
+		<property name="diService" ref="diService"/>
+		<property name="qsncService" ref="qsncService"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="validationService" ref="validationService"/>
+	</bean>
+
+	<bean id="evenementDeclarationPPSender" class="ch.vd.unireg.evenement.di.EvenementDeclarationPPSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="evenementCyberContexteSender" ref="evenementCyberContexteSender"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pp.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pp.output.enabled}" />
+	</bean>
+
+	<bean id="evenementDeclarationPMSender" class="ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="evenementCyberContexteSender" ref="evenementCyberContexteSender"/>
+		<property name="serviceDestinationDI" value="${extprop.jms.queue.evtDeclaration.pm.output.di}" />
+		<property name="serviceDestinationDD" value="${extprop.jms.queue.evtDeclaration.pm.output.dd}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pm.output.enabled}" />
+	</bean>
+
+	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.unireg.evenement.di.EvenementLiberationDeclarationImpotSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.liberation.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.liberation.output.enabled}" />
+	</bean>
+
+	<bean id="evenementCyberContexteSender" class="ch.vd.unireg.evenement.cybercontexte.EvenementCyberContexteSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtCyberContexte.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtCyberContexte.output.enabled}" />
+	</bean>
+
+	<!-- Demande de délais groupés sur des déclarations (e-Délai) -->
+
+	<bean id="evenementDemandeDelaisDeclarationsListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="evenementDemandeDelaisDeclarationsHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtDeclaration.delais.input}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.delais.input.enabled}"/>
+		<property name="description" value="Réception des événements d'ajout de délais groupés sur les déclarations"/>
+	</bean>
+
+	<bean id="evenementDemandeDelaisDeclarationsHandler" class="ch.vd.unireg.evenement.declaration.DemandeDelaisDeclarationsHandler">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="declarationImpotService" ref="diService"/>
+		<property name="demandeDelaisMandataireDAO" ref="demandeDelaisMandataireDAO"/>
+	</bean>
+
+</beans>

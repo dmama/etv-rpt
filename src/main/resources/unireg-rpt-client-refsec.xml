@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="refSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<constructor-arg value="true" />
+		<constructor-arg value="refSecWebClientPool" />
+		<property name="baseUrl" value="${extprop.ref.securite.webservice.url}" />
+		<property name="username" value="${extprop.ref.securite.webservice.username}" />
+		<property name="password" value="${extprop.ref.securite.webservice.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="refSecClientRaw" class="ch.vd.unireg.wsclient.refsec.RefSecClientImpl">
+		<property name="wcPool" ref="refSecWebClientPool" />
+		<property name="appName" value="${extprop.ref.securite.webservice.appName}" />
+		<property name="wsResourcePath" value="${extprop.ref.securite.webservice.ws.path}" />
+		<property name="pingResourcePath" value="${extprop.ref.securite.webservice.health.path}" />
+		<property name="userResourcePath" value="${extprop.ref.securite.webservice.ws.users}" />
+	</bean>
+
+	<bean id="refsecClientTracing" class="ch.vd.unireg.wsclient.refsec.RefSecClientTracing">
+		<property name="statsService" ref="statsService" />
+		<property name="target" ref="refSecClientRaw" />
+	</bean>
+
+	<bean id="refSecClientCache" class="ch.vd.unireg.interfaces.refsec.RefSecClientCache">
+		<property name="target" ref="refsecClientTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="refSecClient" />
+		<property name="statsService" ref="statsService" />
+		<property name="uniregCacheManager" ref="uniregCacheManager"/>
+	</bean>
+
+	<alias alias="refSecClient" name="refsecClientTracing" />
+
+</beans>

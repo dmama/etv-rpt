@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<!--		<Console name="Console" target="SYSTEM_OUT">-->
+		<!--			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />-->
+		<!--			<PatternLayout pattern="[web] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1} | %m%n" />-->
+		<!--		</Console>-->
+		<RollingFile name="Logfile" fileName="${sys:ch.vd.appDir}/logs/unireg-rpt.log" filePattern="${sys:ch.vd.appDir}/logs/unireg-rpt.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[rpt] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1} | %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+		<RollingFile name="WebAccess" fileName="${sys:ch.vd.appDir}/logs/rpt-access.log" filePattern="${sys:ch.vd.appDir}/logs/web-access.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[%c{1}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+		<RollingFile name="JmsAccess" fileName="${sys:ch.vd.appDir}/logs/web-jms-access.log" filePattern="${sys:ch.vd.appDir}/logs/web-jms-access.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[%c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+		<RollingFile name="ServiceTracing" fileName="${sys:ch.vd.appDir}/logs/srv-access-web.log" filePattern="${sys:ch.vd.appDir}/logs/srv-access-web.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[%-18.18c{1}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="ch.vd.unireg" level="DEBUG" />
+		<Logger name="ch.vd.unireg.servlet.UniregRequestMappingHandlerAdapter" level="INFO" />
+		<Logger name="ch.vd.unireg.servlet.UniregDispatcherServlet" level="INFO" />
+		<Logger name="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" level="INFO" />
+
+		<!-- pour ne pas logger en debug les logs du TransactionTemplate de Spring -->
+		<Logger name="ch.vd.unireg.transaction" level="INFO" />
+
+		<Logger name="ch.vd.unireg.servlet.remoting" level="INFO" />
+		<Logger name="net.sf.ehcache" level="ERROR" />
+		<Logger name="org.apache" level="WARN" />
+		<Logger name="org.hibernate" level="WARN" />
+		<!-- <Logger name="org.hibernate.SQL" level="INFO" /> -->
+		<Logger name="org.springframework" level="INFO" />
+
+		<!-- Suppress warnings from Commons Validator -->
+		<Logger name="org.apache.commons.validator.ValidatorResources" level="ERROR" />
+
+		<Logger name="web-access.get" level="INFO" additivity="false">
+			<AppenderRef ref="WebAccess" />
+		</Logger>
+
+		<Logger name="web-access.post" level="INFO" additivity="false">
+			<AppenderRef ref="WebAccess" />
+		</Logger>
+
+		<Logger name="web-access.put" level="INFO" additivity="false">
+			<AppenderRef ref="WebAccess" />
+		</Logger>
+
+		<Logger name="web-access.delete" level="INFO" additivity="false">
+			<AppenderRef ref="WebAccess" />
+		</Logger>
+
+		<Logger name="web-access.other" level="INFO" additivity="false">
+			<AppenderRef ref="WebAccess" />
+		</Logger>
+
+		<Logger name="ws.batch" level="INFO" additivity="false">
+			<AppenderRef ref="WebAccess" />
+		</Logger>
+
+		<Logger name="ServiceTracing" level="INFO" additivity="false">
+			<AppenderRef ref="ServiceTracing" />
+		</Logger>
+
+		<Logger name="ch.vd.unireg.transaction.TracingTransactionManager" level="WARN" additivity="false">
+			<AppenderRef ref="ServiceTracing" />
+		</Logger>
+
+		<Logger name="unireg.jms" level="INFO" additivity="false">
+			<AppenderRef ref="JmsAccess" />
+		</Logger>
+
+		<Root level="WARN">
+			 <!--<AppenderRef ref="Console" />-->
+			<AppenderRef ref="Logfile" />
+		</Root>
+	</Loggers>
+</Configuration>

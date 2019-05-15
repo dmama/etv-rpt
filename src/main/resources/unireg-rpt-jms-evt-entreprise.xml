@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Evénements entreprise -->
+
+	<bean id="evtEntrepriseListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="evtEntrepriseEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtOrganisation}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtOrganisation.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
+		<property name="description" value="Réception des évènements en masse provenant du registre des entreprises"/>
+	</bean>
+
+	<bean id="evtEntrepriseEsbHandler" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseEsbHandler">
+		<property name="processingMode" value="BULK"/>
+		<property name="receptionHandler" ref="evtEntrepriseReceptionHandler"/>
+		<property name="ignoredEventTypes">
+			<set>
+			</set>
+		</property>
+		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evtEntrepriseNotificationQueue" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseNotificationQueueImpl">
+		<constructor-arg name="delayInSeconds" value="${extprop.evtOrganisation.acknowledgementDelay}"/>
+		<property name="evtEntrepriseService" ref="evtEntrepriseService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="evtEntrepriseReceptionHandler" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseReceptionHandlerImpl">
+		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>
+		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="statsService" ref="statsService" />
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evtEntrepriseProcessor" class="ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorFacade">
+		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
+		<property name="internalProcessor" ref="evtEntrepriseProcessorInternal"/>
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evtEntrepriseProcessorInternal" class="ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorInternal">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>
+		<property name="translator" ref="evenementEntrepriseTranslator"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evtEntrepriseProcessorRetry" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseRetryProcessorImpl">
+		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>
+		<property name="processor" ref="evtEntrepriseProcessor"/>
+	</bean>
+
+</beans>

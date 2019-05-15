@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- File based -->
+	<bean id="fileGlobalTiersIndexDirectory" class="ch.vd.unireg.indexer.lucene.FSIndexProvider" lazy-init="true">
+		<constructor-arg value="${extprop.indexer.globalIndexPath}/tiers" />
+	</bean>
+
+	<bean id="fileGlobalMessageIdentificationIndexDirectory" class="ch.vd.unireg.indexer.lucene.FSIndexProvider" lazy-init="true">
+		<constructor-arg value="${extprop.indexer.globalIndexPath}/message-identification" />
+	</bean>
+
+	<bean id="docService" class="ch.vd.unireg.document.DocumentServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="repository" value="${extprop.documents.repository}" />
+	</bean>
+
+<!--	<bean id="servletService" class="ch.vd.unireg.servlet.ServletServiceImpl">
+	</bean>-->
+
+	<bean id="extractionService" class="ch.vd.unireg.extraction.ExtractionServiceImpl">
+		<property name="expiration" value="${extprop.async.extractions.expiration.days}"/>
+		<property name="threadPoolSize" value="${extprop.async.extractions.poolSize}"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="inboxService" ref="inboxService"/>
+	</bean>
+
+	<bean id="inboxService" class="ch.vd.unireg.inbox.InboxServiceImpl"/>
+
+<!--	<bean id="editiqueDownloadService" class="ch.vd.unireg.common.EditiqueDownloadServiceImpl">
+		<property name="servletService" ref="servletService"/>
+		<property name="printPCLManager" ref="printPCLManager"/>
+	</bean>-->
+
+<!--	<bean id="delayedDownloadService" class="ch.vd.unireg.common.DelayedDownloadServiceImpl"/>-->
+
+	<bean id="statsService" class="ch.vd.unireg.stats.StatsServiceImpl">
+		<property name="logPeriode" value="${extprop.stats.log.period}"/>
+	</bean>
+
+</beans>

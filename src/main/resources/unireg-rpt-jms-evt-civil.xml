@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Evénements civil e-CH -->
+
+	<!-- Traitements de masse -->
+
+	<bean id="evtCivilEchMasseListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="evtCivilEchMasseEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtCivilEchMasse}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtCivilEchMasse.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchMasse.enabled}" />
+		<property name="description" value="Consommation en masse des evenements civils provenant de RcPers" />
+	</bean>
+
+	<bean id="evtCivilEchMasseEsbHandler" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
+		<property name="processingMode" value="BATCH"/>
+		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
+		<property name="delaiRecuperationMinutes" value="${extprop.evtCivil.rethrowDelayOnStartup}"/>
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evtCivilEchRecuperateur" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchRecuperateurImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<!-- Traitements "manuels" -->
+
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="evtCivilEchIndividuelEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtCivilEchIndividuel}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtCivilEchIndividuel.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchIndividuel.enabled}" />
+		<property name="description" value="Consommation  prioritaire et au goute à goute des evenements civils provenant de RcPers" />
+	</bean>
+
+	<bean id="evtCivilEchIndividuelEsbHandler" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
+		<property name="processingMode" value="MANUAL"/>
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<!-- Parties communes -->
+
+	<bean id="evtCivilEchEsbHandler" abstract="true" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchEsbHandler">
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="ignoredEventTypes">
+			<set>
+				<value>CORR_RELIGION</value>
+				<value>CORR_LIEU_NAISSANCE</value>
+				<value>CHGT_RELIGION</value>
+				<value>CHGT_BLOCAGE_ADRESSE</value>
+			</set>
+		</property>
+		<property name="eventTypesWithNullEventDateReplacement">
+			<set>
+				<value>ATTRIBUTION_DONNEES_UPI</value>
+				<value>CORR_DONNEES_UPI</value>
+				<value>ANNULATION_DONNEES_UPI</value>
+			</set>
+		</property>
+	</bean>
+
+	<bean id="evtCivilEchNotificationQueue" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">
+		<constructor-arg name="delayInSeconds" value="${extprop.evtCivil.acknowledgementDelay}"/>
+		<property name="evtCivilService" ref="evtCivilEchService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="evtCivilEchReceptionHandler" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchReceptionHandlerImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+        <property name="evtCivilService" ref="evtCivilEchService" />
+		<property name="statsService" ref="statsService" />
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evtCivilEchProcessor" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="translator" ref="evenementCivilEchTranslator"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="mainInterceptor" ref="modificationInterceptor"/>
+		<property name="parentesSynchronizerInterceptor" ref="parentesSynchronizerInterceptor"/>
+		<property name="audit" ref="auditManager"/>
+	</bean>
+	
+	<bean id="evtCivilEchProcessorRetry" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="processor" ref="evtCivilEchProcessor"/>
+		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
+	</bean>
+
+	<bean id="evenementCivilEchStrategyParameters" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchStrategyParametersImpl">
+		<property name="decalageMaxPourDepart" value="${extprop.evtCivil.depart.maxMargin}"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+	<!-- Adapteur RCEnt -->
+
+	<bean id="organisationHistorizer" class="ch.vd.unireg.interfaces.entreprise.rcent.adapter.historizer.OrganisationHistorizer"/>
+
+	<bean id="rcEntAdapter" class="ch.vd.unireg.interfaces.entreprise.rcent.adapter.service.RCEntAdapter">
+		<constructor-arg ref="rcEntClient"/>
+		<constructor-arg ref="organisationHistorizer"/>
+	</bean>
+
+	<!-- Service Entreprise -->
+	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.ServiceEntrepriseRCEnt">
+		<constructor-arg ref="rcEntAdapter"/>
+		<constructor-arg ref="rcEntClient"/>
+		<constructor-arg ref="serviceInfrastructureRaw"/>
+	</bean>
+
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
+		<property name="target" ref="serviceEntrepriseRCEnt" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.entreprise.cache.ServiceEntreprisePersistentCache">
+		<property name="target" ref="serviceEntrepriseTracing" />
+		<property name="cache" ref="entreprisePersistentCache" />
+		<property name="etablissementCache" ref="etablissementCivilPersistentCache" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+<!--	<bean id="serviceEntrepriseEndPoint" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseEndPoint">
+		<property name="target" ref="serviceEntrepriseCache" />
+	</bean>-->
+
+	<alias alias="serviceEntrepriseRaw" name="serviceEntrepriseCache"/>
+
+</beans>

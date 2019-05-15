@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="annonceIDESender" class="ch.vd.unireg.evenement.ide.AnnonceIDESenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtDemandeAnnonceIDE}" />
+		<property name="serviceReplyTo" value="${extprop.jms.queue.evtRapportAnnonceIDE}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDemandeAnnonceIDE.enabled}" />
+	</bean>
+
+	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="noticeReportEventJmsHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtRapportAnnonceIDE}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtRapportAnnonceIDE.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRapportAnnonceIDE.enabled}" />
+		<property name="description" value="Réception d’événements RCEnt de rapport de statut sur les demandes d'annonce à l'IDE."/>
+	</bean>
+
+	<bean id="noticeReportEventJmsHandler" class="ch.vd.unireg.evenement.ide.NoticeReportEventJmsHandler">
+		<property name="reponseIDEProcessor" ref="reponseIDEProcessor" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="evenementDocumentSortantSender" class="ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="enabled" value="${extprop.jms.queue.notification.document.sortant.enabled}"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.notification.document.sortant}"/>
+		<property name="queueRetour" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
+		<property name="serviceDestinationEnMasse" value="${extprop.jms.queue.notification.document.sortant.masse}"/>
+		<property name="enabledEnMasse" value="${extprop.jms.queue.notification.document.sortant.masse.enabled}"/>
+	</bean>
+
+	<bean id="retourDocumentSortantListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="retourDocumentSortantEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.notification.document.sortant.reponse.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.notification.document.sortant.reponse.enabled}" />
+		<property name="description" value="Réponses aux annonces des documents sortants (avec identifiant d'indexation DPerm)"/>
+	</bean>
+
+	<bean id="retourDocumentSortantEsbHandler" class="ch.vd.unireg.evenement.docsortant.RetourDocumentSortantEsbHandler">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="handler" ref="retourDocumentSortantHandler"/>
+	</bean>
+
+	<bean id="retourDocumentSortantHandler" class="ch.vd.unireg.evenement.docsortant.RetourDocumentSortantHandlerImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="documentEFactureDAO" ref="documentEFactureDAO"/>
+	</bean>
+
+</beans>

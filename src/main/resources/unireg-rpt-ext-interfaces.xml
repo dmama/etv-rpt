@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
+
+	<bean id="ifoSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<constructor-arg value="true" />
+		<constructor-arg value="ifoSecWebClientPool-Web" />
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}/securite" />
+		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
+		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
+		<property name="wcPool" ref="ifoSecWebClientPool" />
+	</bean>
+
+	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.unireg.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
+		<property name="client" ref="serviceSecuriteClient" />
+	</bean>
+
+	<bean id="serviceSecuriteServiceTracing" class="ch.vd.unireg.interfaces.service.ServiceSecuriteTracing">
+		<property name="target" ref="#{ '${extprop.switch.securite}' == 'REF-SEC' ? 'serviceSecuriteClientRefSec' : 'serviceSecuriteServiceHostRest' }" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceSecuriteClientTracing" class="ch.vd.unireg.wsclient.host.ServiceSecuriteClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="serviceSecuriteClientRaw"/>
+	</bean>
+
+	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
+
+	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.refsec.ServiceSecuriteRefSecImpl">
+		<property name="refSecClient" ref="refSecClient" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
+
+
+</beans>

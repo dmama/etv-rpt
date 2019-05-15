@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
+		<property name="client" ref="serviceInfrastructureClient" />
+	</bean>
+
+	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
+		<property name="fidorClient" ref="fidorClient" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<!-- rétro-couplage de la mort, mais c'est nécessaire pour ne pas tuer les performances pour résoudre les rues et les localités sur les adresses... -->
+		<property name="cachedServiceInfra" ref="serviceInfrastructureCache"/>
+		<property name="regimesFiscauxBlacklist" value="${extprop.webservice.fidor.regimes.fiscaux.blacklist}"/>
+	</bean>
+
+	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
+		<property name="hostService" ref="serviceInfrastructureServiceHostRest" />
+		<property name="fidorService" ref="serviceInfrastructureFidor" />
+	</bean>
+
+	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
+		<property name="target" ref="#{ '${extprop.switch.infra}' == 'FIDOR' ? 'serviceInfrastructureFidor' : 'serviceInfrastructureMarshaller' }" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
+		<property name="target" ref="serviceInfrastructureTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceInfra" />
+		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+<!--	<bean id="serviceInfrastructureEndPoint" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureEndPoint">
+		<property name="target" ref="serviceInfrastructureCache"/>
+	</bean>-->
+
+	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+
+</beans>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Ce fichier est uniquement inclus dans le cadre d'un application serveur. Il ne doit pas être inclus dans le cadre des unit-tests -->
+
+	<!--
+		Ce bean permet de résoudre les propriétés de type extprop.xxx lors du
+		déploiement dans un application server. Il est absolument nécessaire
+		au fonctionnement d'unireg !
+	-->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="false" />
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="fileEncoding" value="UTF-8"/>
+		<property name="locations">
+			<list>
+				<value>file:${unireg-rpt-web.properties.path}</value>
+				<value>file:${unireg-rpt-nexus.properties.path}</value>
+				<value>file:${unireg-rpt.properties.path}</value>
+				<value>file:${unireg-rpt.credentials.path}</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Ce bean offre la possibilité d'accéder directement aux propriétés externes depuis le code java -->	
+	<bean id="uniregExternalProperties" class="ch.vd.unireg.utils.UniregPropertiesImpl">
+		<property name="fileEncoding" value="UTF-8"/>
+		<property name="filename" value="${unireg-rpt-web.properties.path}" />
+	</bean>
+
+</beans>

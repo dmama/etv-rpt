@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Evénements entreprise -->
+
+	<bean id="evenementEntrepriseTranslator" class="ch.vd.unireg.evenement.entreprise.engine.translator.EvenementEntrepriseTranslatorImpl">
+		<property name="useOrganisationsOfNotice" value="${extprop.evtOrganisation.useEventWS}" />
+		<property name="cappingLevelProvider" ref="evenementEntrepriseTraitementCapping"/>
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="regimeFiscalService" ref="regimeFiscalService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierServicePM" ref="metierServicePM" />
+		<property name="adresseService" ref="adresseService"/>
+		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="evenementEntrepriseService" ref="evtEntrepriseService" />
+		<property name="appariementService" ref="appariementService" />
+		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="audit" ref="auditManager"/>
+	</bean>
+
+	<bean id="evenementEntrepriseTraitementCapping" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseCappingSwitch">
+		<constructor-arg value="${extprop.evtOrganisation.capping}"/>
+	</bean>
+
+</beans>

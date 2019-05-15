@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="file:${extprop.ehcache.file}" />
+	</bean>
+
+	<bean id="civilBerkeleyCache" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
+		<property name="homeDirectory" value="${extprop.civil.cache.homedir}" />
+		<property name="clazz" value="ch.vd.unireg.interfaces.civil.cache.IndividuCacheValueWithParts" />
+		<property name="cachePercent" value="${extprop.civil.cache.cachePercent}" />
+		<property name="lockTimeout" value="${extprop.civil.cache.lockTimeout}" />
+	</bean>
+
+	<bean id="entreprisePersistentCache" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
+		<property name="homeDirectory" value="${extprop.organisation.cache.homedir}/entreprises" />
+		<property name="clazz" value="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseDataCache" />
+		<property name="cachePercent" value="${extprop.organisation.cache.cachePercent}" />
+		<property name="lockTimeout" value="${extprop.organisation.cache.lockTimeout}" />
+	</bean>
+
+	<bean id="etablissementCivilPersistentCache" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
+		<property name="homeDirectory" value="${extprop.organisation.cache.homedir}/etablissements" />
+		<property name="clazz" value="java.lang.Long" />
+		<property name="cachePercent" value="${extprop.organisation.cache.cachePercent}" />
+		<property name="lockTimeout" value="${extprop.organisation.cache.lockTimeout}" />
+	</bean>
+</beans>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQXAConnectionFactory">
+				<property name="brokerURL" value="${extprop.esb.jms.url}" />
+				<property name="userName" value="${extprop.esb.jms.username}" />
+				<property name="password" value="${extprop.esb.jms.password}" />
+			</bean>
+		</property>
+		<property name="maxConnections" value="50"/>
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="esbJmsTemplate" class="ch.vd.unireg.jms.EsbTemplateTracing" lazy-init="true">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="esbStore" ref="raftEsbStore" />
+		<property name="receiveTimeout" value="1000" />
+		<property name="statsService" ref="jmsStatsService" />
+		<property name="application" value="unireg" />
+		<property name="domain" value="fiscalite"/>
+	</bean>
+
+	<!-- Versions 'hors-transaction' de l'ESB template + JMS template -->
+	<bean id="noTxConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="${extprop.esb.jms.url}" />
+				<property name="userName" value="${extprop.esb.jms.username}" />
+				<property name="password" value="${extprop.esb.jms.password}" />
+			</bean>
+		</property>
+		<property name="maxConnections" value="8"/>
+	</bean>
+
+	<bean id="noTxEsbJmsTemplate" class="ch.vd.unireg.jms.EsbTemplateTracing" lazy-init="true">
+		<property name="connectionFactory" ref="noTxConnectionFactory" />
+		<property name="esbStore" ref="raftEsbStore" />
+		<property name="receiveTimeout" value="1000" />
+		<property name="statsService" ref="jmsStatsService" />
+		<property name="application" value="unireg" />
+		<property name="domain" value="fiscalite"/>
+		<property name="destinationSuffix" value=" (noTx)"/>
+	</bean>
+
+	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
+		<property name="endpoint" value="${extprop.esb.raft.store}" />
+	</bean>
+
+	<bean id="zipRaftEsbStore" class="ch.vd.technical.esb.store.raft.ZipRaftEsbStore">
+		<property name="store" ref="raftEsbStore"/>
+	</bean>
+
+	<bean id="esbMessageListener" abstract="true" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="connectionFactory" ref="jmsConnectionFactory"/>
+		<property name="esbErrorHandler" ref="esbErrorHandler"/>
+		<property name="esbMessageTracingFactory" ref="esbMessageTracingFactory"/>
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+	</bean>
+
+	<bean id="esbMessageTracingFactory" class="ch.vd.unireg.jms.EsbMessageTracingFactoryImpl">
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<bean id="esbErrorHandler" class="ch.vd.unireg.jms.EsbBusinessErrorHandlerImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="destinationQueue" value="${extprop.jms.error.queue}"/>
+	</bean>
+
+	<bean id="esbMessageValidatorRaw" class="ch.vd.unireg.jms.EsbMessageValidatorImpl">
+		<property name="sources">
+			<list>
+				<value>classpath:eCH-0007-4-0.xsd</value>
+				<value>classpath:eCH-0044-2-0.xsd</value>
+				<value>classpath:eCH-0044-3-0.xsd</value>
+				<value>classpath:eCH-0010-4-0.xsd</value>
+				<value>classpath:eCH-0010-5-0.xsd</value>
+				<value>classpath:eCH-0010-6-0.xsd</value>
+				<value>classpath:eCH-0007-6-0.xsd</value>
+				<value>classpath:eCH-0008-3-0.xsd</value>
+				<value>classpath:eCH-0044-4-1.xsd</value>
+				<value>classpath:eCH-0046-2-1.xsd</value>
+				<value>classpath:eCH-0046-3-0.xsd</value>
+				<value>classpath:eCH-0097-2-0.xsd</value>
+				<value>classpath:eCH-0098-3-0.xsd</value>
+				<value>classpath:eVD-0004-3-0.xsd</value>
+				<value>classpath:eVD-0022-3-5.xsd</value>
+				<value>classpath:eVD-0023-3-5.xsd</value>
+				<value>classpath:eVD-0024-3-5.xsd</value>
+				<value>classpath:eVD-0025-1-2.xsd</value>
+				<value>classpath:unireg-common-1.xsd</value>
+				<value>classpath:unireg-common-2.xsd</value>
+				<value>classpath:party/unireg-party-address-2.xsd</value>
+				<value>classpath:party/unireg-party-address-3.xsd</value>
+				<value>classpath:party/unireg-party-agent-1.xsd</value>
+				<value>classpath:party/unireg-party-ebilling-1.xsd</value>
+				<value>classpath:party/unireg-party-immovableproperty-2.xsd</value>
+				<value>classpath:party/unireg-party-landregistry-1.xsd</value>
+				<value>classpath:party/unireg-party-landtaxlightening-1.xsd</value>
+				<value>classpath:party/unireg-party-relation-3.xsd</value>
+				<value>classpath:party/unireg-party-relation-4.xsd</value>
+				<value>classpath:party/unireg-party-withholding-1.xsd</value>
+				<value>classpath:party/unireg-party-taxdeclaration-4.xsd</value>
+				<value>classpath:party/unireg-party-taxdeclaration-5.xsd</value>
+				<value>classpath:party/unireg-party-taxresidence-3.xsd</value>
+				<value>classpath:party/unireg-party-taxresidence-4.xsd</value>
+				<value>classpath:party/unireg-party-4.xsd</value>
+				<value>classpath:party/unireg-party-5.xsd</value>
+				<value>classpath:party/unireg-party-taxpayer-4.xsd</value>
+				<value>classpath:party/unireg-party-taxpayer-5.xsd</value>
+				<value>classpath:party/unireg-party-administrativeauthority-4.xsd</value>
+				<value>classpath:party/unireg-party-corporation-4.xsd</value>
+				<value>classpath:party/unireg-party-corporation-5.xsd</value>
+				<value>classpath:party/unireg-party-othercommunity-2.xsd</value>
+				<value>classpath:party/unireg-party-debtor-4.xsd</value>
+				<value>classpath:party/unireg-party-establishment-1.xsd</value>
+				<value>classpath:party/unireg-party-person-4.xsd</value>
+				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
+				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
+				<value>classpath:event/di/evtPublicationCodeControleCyber-2.xsd</value>
+				<value>classpath:event/di/evtPublicationContextePrestationCyber-1.xsd</value>
+				<value>classpath:event/di/evtLiberationDeclarationImpot-1.xsd</value>
+				<value>classpath:event/lr/evtQuittanceListe-v1.xsd</value>
+				<value>classpath:event/data/dataEvent-1.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-3.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-4.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-5.xsd</value>
+				<value>classpath:event/rt/rapport-travail-common-1.xsd</value>
+				<value>classpath:event/rt/rapport-travail-request-1.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-1-0.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-3-2.xsd</value>
+				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
+				<value>classpath:editique/UniregPP_FichierImpression.xsd</value>
+				<value>classpath:event/dperm/typeSimpleDPerm-1.xsd</value>
+				<value>classpath:event/docsortant/documentSortantRepElec-1.xsd</value>
+				<value>classpath:event/docsortant/quittanceRepElec-3.xsd</value>
+				<value>classpath:event/degrevement/documentDematDegrevement-1.xsd</value>
+				<value>classpath:event/dperm/elementsIntegrationMetier-5.xsd</value>
+				<value>classpath:event/degrevement/quittanceIntegrationMetierImmDetails-1.xsd</value>
+				<value>classpath:xsd/civil/**/*.xsd</value>
+				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
+				<value>classpath:xsd/identification/**/*.xsd</value>			</list>
+		</property>
+	</bean>
+
+	<bean id="esbMessageValidatorServiceTracing" class="ch.vd.unireg.stats.ServiceTracingFactory">
+		<property name="statsService" ref="statsService"/>
+		<property name="detailedLogging" value="true"/>
+		<property name="serviceName" value="EsbMessageValidator"/>
+	</bean>
+
+	<bean id="esbMessageValidatorTracing" class="ch.vd.unireg.jms.EsbMessageValidatorTracing">
+		<property name="target" ref="esbMessageValidatorRaw"/>
+		<property name="serviceTracing" ref="esbMessageValidatorServiceTracing"/>
+	</bean>
+
+	<alias alias="esbMessageValidator" name="esbMessageValidatorTracing"/>
+
+</beans>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<!--	<bean id="fourreNeutreControllerValidator" class="ch.vd.unireg.fourreNeutre.FourreNeutreControllerValidator">
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>-->
+
+<!--	<bean id="fourreNeutreController" class="ch.vd.unireg.fourreNeutre.FourreNeutreController">
+		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="fourreNeutreManager" ref="fourreNeutreManager" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper" />
+		<property name="validator" ref="fourreNeutreControllerValidator" />
+	</bean>-->
+
+
+<!--	<bean id="fourreNeutreManager" class="ch.vd.unireg.fourreNeutre.manager.FourreNeutreManagerImpl">
+		<property name="fourreNeutreService" ref="fourreNeutreService" />
+	</bean>-->
+
+
+	<bean id="fourreNeutreHelper" class="ch.vd.unireg.fourreNeutre.FourreNeutreHelperImpl">
+		<property name="premierePeriodePP" value="${extprop.fourre.neutre.pp.premiere.periode}"/>
+		<property name="premierePeriodePM" value="${extprop.fourre.neutre.pm.premiere.periode}"/>
+		<property name="premierePeriodeIS" value="${extprop.fourre.neutre.is.premiere.periode}"/>
+		<property name="fourreNeutreAutoriseePourPP" value="${extprop.fourre.neutre.pp.enabled}" />
+		<property name="fourreNeutreAutoriseePourPM" value="${extprop.fourre.neutre.pm.enabled}" />
+		<property name="fourreNeutreAutoriseePourIS" value="${extprop.fourre.neutre.is.enabled}" />
+	</bean>
+</beans>

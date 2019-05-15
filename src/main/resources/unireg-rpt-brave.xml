@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- la configuration de brave : stockage des traces id dans le MDC de slf4j -->
+
+	<bean id="braveTraceContext" class="brave.context.slf4j.MDCCurrentTraceContext" factory-method="create"/>
+
+	<bean id="braveTracing" class="brave.spring.beans.TracingFactoryBean">
+		<property name="localServiceName" value="unireg-rpt"/>
+		<property name="currentTraceContext" ref="braveTraceContext" />
+		<property name="spanReporter" value="NOOP" />
+	</bean>
+
+	<bean id="braveHttpTracing" class="brave.spring.beans.HttpTracingFactoryBean">
+		<property name="tracing" ref="braveTracing"/>
+	</bean>
+
+	<!-- le provider JAX-RS (émission des entêtes Dapper sur les appels en sortie) -->
+	<bean id="braveJaxRsProvider" class="org.apache.cxf.tracing.brave.jaxrs.BraveClientProvider">
+		<constructor-arg ref="braveHttpTracing"/>
+	</bean>
+
+	<!-- le filtre pour la servlet (récupération/création des entêtes Dapper sur les appels en entrée) -->
+	<bean id="braveServletFilter" class="brave.servlet.TracingFilter">
+		<constructor-arg type="brave.http.HttpTracing" ref="braveHttpTracing"/>
+	</bean>
+
+</beans>
