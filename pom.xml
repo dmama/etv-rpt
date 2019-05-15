@@ -10,6 +10,18 @@
 	<packaging>jar</packaging>
 	<name>unireg - Rpt</name>
 
+	<scm>
+		<connection>scm:git:ssh://git@bitbucket.etat-de-vaud.ch/fisc/unireg-rpt-batch.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.etat-de-vaud.ch/fisc/unireg-rpt-batch.git</developerConnection>
+		<url>https://portail.etat-de-vaud.ch/outils/git/projects/FISC/repos/unireg-rpt-batch/browse</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<issueManagement>
+		<system>jira</system>
+		<url>http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC</url>
+	</issueManagement>
+
 	<properties>
 		<unireg-project.version>19R3.A.0-SNAPSHOT</unireg-project.version>
 
