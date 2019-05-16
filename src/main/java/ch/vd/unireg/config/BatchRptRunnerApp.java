@@ -45,6 +45,14 @@ public class BatchRptRunnerApp {
 		DECIMAL_FORMAT_SEC.setRoundingMode(RoundingMode.HALF_UP);
 	}
 
+	private class BatchRunnertException extends Exception {
+
+		BatchRunnertException(Throwable cause) {
+			super(cause);
+		}
+
+	}
+
 	public static void main(String[] args) {
 		final StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -58,13 +66,23 @@ public class BatchRptRunnerApp {
 		LOGGER.info("Parametres  du batch {}: ", "PP".equalsIgnoreCase(properties.getProperty("population")) ? ExtractionDonneesRptJob.NAME : ExtractionDonneesRptPMJob.NAME);
 		LOGGER.info("Periode Fiscale = {}, mode = {}  ", properties.get("periodeFiscale"), properties.get("mode"));
 
-		new BatchRptRunnerApp(properties);
-		stopWatch.stop();
-		LOGGER.info("Fin du traitement {}. Duree = {} sec.", BatchRptRunnerApp.class.getName(), formatMsToSecondes(stopWatch.getLastTaskTimeMillis()));
-		System.exit(0);
+		try {
+			new BatchRptRunnerApp(properties);
+			stopWatch.stop();
+			LOGGER.info("Fin du traitement {}. Duree = {} sec.", BatchRptRunnerApp.class.getName(), formatMsToSecondes(stopWatch.getLastTaskTimeMillis()));
+
+			System.exit(0);
+		}
+		catch (BatchRunnertException exp) {
+			stopWatch.stop();
+			System.err.println("Erreur d'execution .  Raison: " + exp.getMessage());
+			LOGGER.error("Erreur d'execution .  Raison: {}", exp.getMessage());
+			System.exit(1);
+		}
+
 	}
 
-	private BatchRptRunnerApp(Properties properties) {
+	private BatchRptRunnerApp(Properties properties) throws BatchRunnertException {
 
 		LOGGER.info("Contruction du context spring");
 		final ApplicationContext context = new ClassPathXmlApplicationContext("unireg-all-module.xml");
@@ -108,9 +126,7 @@ public class BatchRptRunnerApp {
 
 		}
 		catch (Exception exp) {
-			System.err.println("Erreur d'execution .  Raison: " + exp.getMessage());
-			LOGGER.error("Erreur d'execution .  Raison: {}", exp.getMessage());
-			System.exit(1);
+			throw new BatchRunnertException(exp);
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
