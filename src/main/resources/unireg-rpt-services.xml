@@ -28,13 +28,6 @@
 
 	<bean id="inboxService" class="ch.vd.unireg.inbox.InboxServiceImpl"/>
 
-<!--	<bean id="editiqueDownloadService" class="ch.vd.unireg.common.EditiqueDownloadServiceImpl">
-		<property name="servletService" ref="servletService"/>
-		<property name="printPCLManager" ref="printPCLManager"/>
-	</bean>-->
-
-<!--	<bean id="delayedDownloadService" class="ch.vd.unireg.common.DelayedDownloadServiceImpl"/>-->
-
 	<bean id="statsService" class="ch.vd.unireg.stats.StatsServiceImpl">
 		<property name="logPeriode" value="${extprop.stats.log.period}"/>
 	</bean>

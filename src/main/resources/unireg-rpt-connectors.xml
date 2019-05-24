@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Exécuteur HTTP pour tous les appels spring-remoting de Web vers Nexus -->
+	<bean id="nexusHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
+		<property name="serviceName" value="nexus"/>
+		<property name="username" value="${extprop.remoting.unireg.nexus.username}" />
+		<property name="password" value="${extprop.remoting.unireg.nexus.password}" />
+		<property name="maxConnectionsPerRoute" value="${extprop.remoting.unireg.nexus.maxConnectionsPerHost}" />
+		<property name="maxTotalConnections" value="${extprop.remoting.unireg.nexus.maxTotalConnections}" />
+		<property name="connectTimeout" value="${extprop.remoting.unireg.nexus.connectTimeout:5000}" />
+		<property name="connectionRequestTimeout" value="${extprop.remoting.unireg.nexus.connectionRequestTimeout:5000}" />
+		<property name="socketTimeout" value="${extprop.remoting.unireg.nexus.socketTimeout:600000}" />
+		<property name="braveHttpTracing" ref="braveHttpTracing"/>
+		<property name="preAuthHosts">
+			<list>
+				<!-- active la pré-authentication pour améliorer les performances (= envoi immédiat
+					 du username/password plutôt que d'attendre une réponse HTTP 401 du serveur pour le faire) -->
+				<value>${extprop.remoting.unireg.nexus.host}</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Gestion de la cohérence des données du cache centralisé -->
+
+	<!-- Data Event Service du cache centralisé Nexus -->
+	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener"/>
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="nexusDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
+		<property name="target" ref="nexusDataEventService"/>
+		<property name="statsService" ref="statsService"/>
+		<property name="serviceName" value="NexusDataEvent"/>
+	</bean>
+
+	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus et les entreprises -->
+	<bean id="nexusDataEventListener" class="ch.vd.unireg.data.CivilDataEventSlaveServiceListener">
+		<property name="master" ref="dataEventService"/>
+		<property name="slave" ref="nexusDataEventTracing"/>
+	</bean>
+
+	<!-- Connnecteur individu -->
+
+	<bean id="individuConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/individuConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.IndividuConnector" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">
+		<property name="target" ref="individuConnectorRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache">
+		<property name="target" ref="individuConnectorTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceCivil" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="individuConnector" name="individuConnectorCache"/>
+
+	<!-- Connecteur des entreprises -->
+
+	<bean id="entrepriseConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/entrepriseConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.EntrepriseConnector" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+
+	<bean id="entrepriseConnectorTracing" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorTracing">
+		<property name="target" ref="entrepriseConnectorRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorCache">
+		<property name="target" ref="entrepriseConnectorTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="entrepriseConnector" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />
+
+	<!-- Connecteur UPI -->
+
+	<bean id="upiConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/upiConnector.remoting"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.UpiConnector"/>
+		<property name="executor" ref="nexusHttpRequestExecutor"/>
+	</bean>
+
+	<bean id="upiConnectorTracing" class="ch.vd.unireg.interfaces.upi.UpiConnectorTracing">
+		<property name="target" ref="upiConnectorRemote"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="upiConnector" name="upiConnectorTracing"/>
+
+	<!-- Connecteur infra -->
+
+	<bean id="infrastructureConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/infraConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.InfrastructureConnector" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="infrastructureConnectorTracing" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorTracing">
+		<property name="target" ref="infrastructureConnectorRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
+		<property name="target" ref="infrastructureConnectorTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="infraConnector" />
+		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
+
+	<!-- Connecteur RefSec -->
+
+	<bean id="securiteConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/securiteConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.securite.SecuriteConnector" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="securiteConnectorTracing" class="ch.vd.unireg.interfaces.securite.SecuriteConnectorTracing">
+		<property name="target" ref="securiteConnectorRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="securiteConnector" name="securiteConnectorTracing" />
+
+</beans>

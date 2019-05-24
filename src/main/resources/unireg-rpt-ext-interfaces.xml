@@ -37,10 +37,9 @@
 
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
 
-	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.refsec.ServiceSecuriteRefSecImpl">
-		<property name="refSecClient" ref="refSecClient" />
+	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.ServiceSecuriteImpl">
+		<property name="securiteConnector" ref="securiteConnector" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
-
 
 </beans>

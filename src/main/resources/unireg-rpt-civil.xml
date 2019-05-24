@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
+	<bean id="individuConnectorRCPers" class="ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers">
 		<property name="client" ref="rcPersClient" />
-		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
 
-	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilRcPers" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilPersistentCache">
-		<property name="target" ref="serviceCivilServiceTracing" />
-		<property name="cache" ref="civilBerkeleyCache" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
-
-<!--	<bean id="serviceCivilEndPoint" class="ch.vd.unireg.interfaces.civil.ServiceCivilEndPoint">
-		<property name="target" ref="serviceCivilServiceCache" />
-	</bean>-->
-
-	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
 </beans>

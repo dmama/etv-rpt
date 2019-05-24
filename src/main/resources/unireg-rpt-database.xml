@@ -75,7 +75,7 @@
 		<entry key="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
 		<entry key="hibernate.connection.autocommit" value="false" />
 		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory" />
-		<entry key="hibernate.show_sql" value="true" />
+		<entry key="hibernate.show_sql" value="false" />
 		<entry key="hibernate.jdbc.batch_size" value="0" />
 		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
 		<entry key="hibernate.dialect" value="${oracle.hibernate.dialect}" />

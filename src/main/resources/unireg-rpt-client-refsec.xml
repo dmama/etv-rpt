@@ -28,14 +28,6 @@
 		<property name="target" ref="refSecClientRaw" />
 	</bean>
 
-	<bean id="refSecClientCache" class="ch.vd.unireg.interfaces.refsec.RefSecClientCache">
-		<property name="target" ref="refsecClientTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="refSecClient" />
-		<property name="statsService" ref="statsService" />
-		<property name="uniregCacheManager" ref="uniregCacheManager"/>
-	</bean>
-
 	<alias alias="refSecClient" name="refsecClientTracing" />
 
 </beans>

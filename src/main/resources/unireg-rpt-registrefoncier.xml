@@ -20,46 +20,6 @@
 		<property name="syncOnCommit" value="false" />
 	</bean>
 
-<!--	<bean id="importRFController" class="ch.vd.unireg.registrefoncier.importrf.ImportRFController">
-		<property name="serviceImportRF" ref="serviceImportRF" />
-		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
-		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
-	</bean>-->
-
-<!--	<bean id="immeubleRFController" class="ch.vd.unireg.registrefoncier.immeuble.ImmeubleRFController">
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="tiersService" ref="tiersService"/>
-		<property name="adresseService" ref="adresseService"/>
-		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
-		<property name="registreFoncierService" ref="serviceRF"/>
-	</bean>-->
-
-<!--	<bean id="communauteRFController" class="ch.vd.unireg.registrefoncier.communaute.CommunauteRFController">
-		<property name="ayantDroitDAO" ref="ayantDroitRFDAO"/>
-		<property name="modeleCommunauteDAO" ref="modeleCommunauteRFDAO"/>
-		<property name="principalCommunauteRFDAO" ref="principalCommunauteRFDAO"/>
-		<property name="tiersService" ref="tiersService"/>
-		<property name="tiersMapHelper" ref="tiersMapHelper"/>
-		<property name="criteriaValidator">
-			<bean class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator">
-				&lt;!&ndash; allowsEmpty &ndash;&gt;
-				<constructor-arg value="true"/>
-			</bean>
-		</property>
-		<property name="addPrincipalViewValidator">
-			<bean class="ch.vd.unireg.registrefoncier.communaute.AddPrincipalViewValidator"/>
-		</property>
-		<property name="registreFoncierService" ref="serviceRF"/>
-		<property name="communauteRFProcessor" ref="communauteRFProcessor"/>
-	</bean>-->
-
-<!--	<bean id="situationSurchargeRFController" class="ch.vd.unireg.registrefoncier.situation.surcharge.SituationSurchargeRFController">
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
-		<property name="situationRFDAO" ref="situationRFDAO"/>
-		<property name="registreFoncierService" ref="serviceRF"/>
-		<property name="urlGeoVD" value="${extprop.geo.vd.url}"/>
-		<property name="controllerUtils" ref="controllerUtils"/>
-	</bean>-->
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
 

@@ -28,6 +28,7 @@
 
 		<!-- Web application versions (voir section "References" de https://tomcat.apache.org/tomcat-8.0-doc/index.html) -->
 		<servlet.version>3.1.0</servlet.version>
+		<servlet.common.version>2.3-SNAPSHOT</servlet.common.version>
 
 		<!-- Editique -->
 		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
@@ -103,6 +104,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.vd.unireg</groupId>
+			<artifactId>unireg-servlet-common</artifactId>
+			<version>${servlet.common.version}</version>
 		</dependency>
 
 		<!-- implémentation log4j2 pour slf4j -->

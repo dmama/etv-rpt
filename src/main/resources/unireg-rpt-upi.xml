@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">
+	<bean id="upiConnectorRCPers" class="ch.vd.unireg.interfaces.upi.rcpers.UpiConnectorRCPers">
 		<property name="client" ref="rcPersClient" />
-		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
-
-	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
-		<property name="target" ref="serviceUpiRcPers" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-<!--	<bean id="serviceUpiEndPoint" class="ch.vd.unireg.interfaces.upi.ServiceUpiEndPoint">
-		<property name="target" ref="serviceUpiTracing" />
-	</bean>-->
-
-	<alias alias="serviceUpiRaw" name="serviceUpiTracing"/>
-
 </beans>
