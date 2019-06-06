@@ -97,26 +97,7 @@ public final class BatchRptRunnerApp {
 
 			// Chargement du batchScheduler depuis le context.
 			final BatchScheduler batchScheduler = context.getBean("batchScheduler", BatchSchedulerImpl.class);
-			final JobDefinition jobDefinition = batchScheduler.startJob(PROPERTIES_INSTANCE.getJobName(), params);
-
-			Integer oldpercentProgression = jobDefinition.getPercentProgression();
-
-			// On attend que toutes le job soit terminé
-			while (jobDefinition.isRunning()) {
-				if (oldpercentProgression == null) {
-					oldpercentProgression = jobDefinition.getPercentProgression();
-				}
-				if (jobDefinition.getPercentProgression() != null && oldpercentProgression != null && jobDefinition.getPercentProgression() >= oldpercentProgression + 3) {
-					System.out.println("###### Batchs atifs #########");
-					System.out.println(jobDefinition.getDescription());
-					System.out.println(" Progression  " + jobDefinition.getPercentProgression() + "%  " + jobDefinition.getRunningMessage());
-					System.out.println(" Statut  " + jobDefinition.getStatut().name());
-					if (oldpercentProgression < 100) {
-						oldpercentProgression = jobDefinition.getPercentProgression();
-					}
-				}
-			}
-
+			batchScheduler.startJob(PROPERTIES_INSTANCE.getJobName(), params);
 		}
 		catch (Exception exp) {
 			throw new BatchSystemException(exp.getMessage(), exp);
