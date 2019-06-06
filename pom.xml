@@ -7,8 +7,10 @@
 	<groupId>ch.vd.unireg</groupId>
 	<artifactId>unireg-rpt</artifactId>
 	<version>19R3.A.0-SNAPSHOT</version>
+
 	<packaging>jar</packaging>
 	<name>unireg - Rpt</name>
+	<description>Projet maven du batchs d'extraction RPT de l'application UNIREG</description>
 
 
 
@@ -18,6 +20,7 @@
 	</issueManagement>
 
 	<properties>
+		<!-- UNIREG version -->
 		<unireg-project.version>19R3.A.0-SNAPSHOT</unireg-project.version>
 
 		<!-- Database settings -->
@@ -39,12 +42,44 @@
 		<cxf.version>3.3.1</cxf.version>
 		<brave.version>4.16.2</brave.version>
 
+		<!-- Distribution -->
+		<dist.app.name>unireg-rpt-${project.version}</dist.app.name>
+		<assembly.finalName>${project.artifactId}-${project.version}</assembly.finalName>
+
+		<xfile.url>http://outils-xweb-ws.etat-de-vaud.ch/outils/xweb/api</xfile.url>
+		<cei-maven-plugin.from>safubi</cei-maven-plugin.from>
+
+		<maven-assembly-plugin.version>2.5.3</maven-assembly-plugin.version>
+		<cei-maven-plugin.version>1.1.0</cei-maven-plugin.version>
+		<local.distribution.artifact.file>${project.build.directory}/${dist.app.name}.zip</local.distribution.artifact.file>
+
+
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>devex.release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>assembly-distribution</id>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<dependencies>
 
-		<!-- Project -->
+		<!-- Dependances application UNIREG -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>unireg-business</artifactId>
@@ -54,6 +89,13 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>unireg-core</artifactId>
 			<version>${unireg-project.version}</version>
+		</dependency>
+
+		<!-- Dependances application TAO -->
+		<dependency>
+			<groupId>ch.vd.dfin.tao</groupId>
+			<artifactId>tao-batch-common-ind</artifactId>
+			<version>1.6</version>
 		</dependency>
 
 		<!-- Librairie brave to capture latency information  -->
@@ -232,10 +274,32 @@
 				</configuration>
 			</plugin>
 
+			<!-- Plugin de livraison au CEI -->
+			<plugin>
+				<groupId>cei.aew.web</groupId>
+				<artifactId>cei-maven-plugin</artifactId>
+				<version>${cei-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<webresourceurl>${xfile.url}</webresourceurl>
+					<filetoupload>${local.distribution.artifact.file}</filetoupload>
+					<from>${cei-maven-plugin.from}</from>
+					<to>WEB</to>
+					<warprojectonly>true</warprojectonly>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<finalName>unireg-rpt-batch-${project.version}</finalName>
+					<finalName>${assembly.finalName}</finalName>
 					<archive>
 						<manifest>
 							<mainClass>ch.vd.unireg.config.BatchRptRunnerApp</mainClass>
@@ -259,6 +323,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.2</version>
 				<executions>
 					<execution>
 						<goals>
@@ -287,6 +352,14 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
 					<tagNameFormat>v@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 
