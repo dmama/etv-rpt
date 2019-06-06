@@ -19,6 +19,23 @@
 		<constructor-arg ref="infrastructureConnector"/>
 	</bean>
 
+	<bean id="entrepriseConnectorTracing" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorTracing">
+		<property name="target" ref="entrepriseConnectorRCEnt" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorPersistentCache">
+		<property name="target" ref="entrepriseConnectorTracing" />
+		<property name="cache" ref="entreprisePersistentCache" />
+		<property name="etablissementCache" ref="etablissementCivilPersistentCache" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+<!--	<bean id="entrepriseConnectorEndPoint" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorEndPoint">
+		<property name="target" ref="entrepriseConnectorCache" />
+	</bean>-->
+
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache"/>
 
 </beans>

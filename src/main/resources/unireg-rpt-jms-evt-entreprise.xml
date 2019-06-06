@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- Evénements entreprise -->
 
@@ -50,7 +50,7 @@
 		<property name="translator" ref="evenementEntrepriseTranslator"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
-		<property name="dataEventService" ref="dataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
 		<property name="audit" ref="auditManager"/>
 	</bean>
 

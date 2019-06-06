@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- Evénements civil e-CH -->
 
@@ -74,7 +74,7 @@
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
-        <property name="evtCivilService" ref="evtCivilEchService" />
+		<property name="evtCivilService" ref="evtCivilEchService" />
 		<property name="statsService" ref="statsService" />
 		<property name="audit" ref="auditManager"/>
 	</bean>
@@ -87,12 +87,12 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
 		<property name="serviceCivil" ref="serviceCivilService"/>
-		<property name="dataEventService" ref="dataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
 		<property name="mainInterceptor" ref="modificationInterceptor"/>
 		<property name="parentesSynchronizerInterceptor" ref="parentesSynchronizerInterceptor"/>
 		<property name="audit" ref="auditManager"/>
 	</bean>
-	
+
 	<bean id="evtCivilEchProcessorRetry" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>

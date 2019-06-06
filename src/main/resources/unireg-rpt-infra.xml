@@ -19,4 +19,31 @@
 		<property name="fidorConnector" ref="infrastructureConnectorFidor" />
 	</bean>
 
+	<bean id="infrastructureConnectorTracing" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorTracing">
+		<property name="target" ref="#{ '${extprop.switch.infra}' == 'FIDOR' ? 'infrastructureConnectorFidor' : 'infrastructureConnectorMarshaller' }" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
+		<property name="target" ref="infrastructureConnectorTracing" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnector" />
+			</bean>
+		</property>
+		<property name="shortLivedCache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnectorShortLived" />
+			</bean>
+		</property>
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+<!--	<bean id="infrastructureConnectorEndPoint" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorEndPoint">
+		<property name="target" ref="infrastructureConnectorCache"/>
+	</bean>-->
+
+	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
+
 </beans>

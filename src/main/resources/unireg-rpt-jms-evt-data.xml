@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- [UNIREG-2399] on ne veut pas valider les événements DB parce que ça prend 60% du temps d'insertion des événements civils -->
 	<bean id="concentratingDataEventJmsSender" class="ch.vd.unireg.data.ConcentratingDataEventJmsSender">
 		<property name="evenementsFiscauxActives" value="${extprop.jms.queue.evtFiscal.enabled}"/>
-		<property name="parentService" ref="dataEventService"/>
 		<property name="sender" ref="dataEventSender"/>
 		<property name="synchronizationRegistrar" ref="transactionSynchronizationRegistrar"/>
 	</bean>

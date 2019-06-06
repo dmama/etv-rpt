@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Exécuteur HTTP pour tous les appels spring-remoting de Web vers Nexus -->
 	<bean id="nexusHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
@@ -25,22 +25,20 @@
 	<!-- Gestion de la cohérence des données du cache centralisé -->
 
 	<!-- Data Event Service du cache centralisé Nexus -->
-	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener"/>
+	<bean id="nexusCivilDataEventRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/civilDataEventNotifier.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventNotifier"/>
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="nexusDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
-		<property name="target" ref="nexusDataEventService"/>
+	<bean id="nexusCivilDataEventTracing" class="ch.vd.unireg.data.CivilDataEventNotifierTracing">
+		<property name="target" ref="nexusCivilDataEventRemote"/>
 		<property name="statsService" ref="statsService"/>
 		<property name="serviceName" value="NexusDataEvent"/>
 	</bean>
 
-	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus et les entreprises -->
-	<bean id="nexusDataEventListener" class="ch.vd.unireg.data.CivilDataEventSlaveServiceListener">
-		<property name="master" ref="dataEventService"/>
-		<property name="slave" ref="nexusDataEventTracing"/>
+	<bean id="nexusCivilDataEventBridge" class="ch.vd.unireg.data.CivilDataEventListenerToNotifierBridge">
+		<property name="target" ref="nexusCivilDataEventTracing"/>
 	</bean>
 
 	<!-- Connnecteur individu -->
@@ -58,11 +56,13 @@
 
 	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache">
 		<property name="target" ref="individuConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="serviceCivil" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
 	<alias alias="individuConnector" name="individuConnectorCache"/>
@@ -83,11 +83,13 @@
 
 	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorCache">
 		<property name="target" ref="entrepriseConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="entrepriseConnector" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="entrepriseConnector" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />
@@ -122,9 +124,16 @@
 
 	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
 		<property name="target" ref="infrastructureConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="infraConnector" />
-		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnector" />
+			</bean>
+		</property>
+		<property name="shortLivedCache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnectorShortLived" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>

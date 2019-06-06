@@ -12,7 +12,7 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="regimeFiscalService" ref="regimeFiscalService" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="dataEventService" ref="dataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierServicePM" ref="metierServicePM" />
 		<property name="adresseService" ref="adresseService"/>

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="bvrPlusClientRaw" class="ch.vd.unireg.webservice.sipf.BVRPlusClientImpl">
-	    <property name="serviceUrl" value="${extprop.webservice.sipf.bvrplus.url}" />
-	    <property name="username" value="${extprop.webservice.sipf.bvrplus.username}" />
-	    <property name="password" value="${extprop.webservice.sipf.bvrplus.password}" />
-	</bean>
+<!--	<bean id="bvrPlusClientRaw" class="ch.vd.unireg.webservice.sipf.BVRPlusClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.sipf.bvrplus.url}" />
+		<property name="username" value="${extprop.webservice.sipf.bvrplus.username}" />
+		<property name="password" value="${extprop.webservice.sipf.bvrplus.password}" />
+	</bean>-->
 
-	<bean id="bvrPlusClientTracing" class="ch.vd.unireg.wsclient.bvrplus.BVRPlusClientTracing">
+<!--	<bean id="bvrPlusClientTracing" class="ch.vd.unireg.wsclient.bvrplus.BVRPlusClientTracing">
 		<property name="target" ref="bvrPlusClientRaw"/>
 		<property name="statsService" ref="statsService"/>
-	</bean>
+	</bean>-->
 
-	<!--<bean id="mockBvrPlusClient" class="ch.vd.unireg.wsclient.bvrplus.MockBVRPlusClient"/>-->
+	<bean id="mockBvrPlusClient" class="ch.vd.unireg.wsclient.bvrplus.MockBVRPlusClient"/>
 
-	<alias alias="bvrPlusClient" name="bvrPlusClientTracing"/>
-	<!--<alias alias="bvrPlusClient" name="mockBvrPlusClient"/>-->
+	<!--<alias alias="bvrPlusClient" name="bvrPlusClientTracing"/>-->
+	<alias alias="bvrPlusClient" name="mockBvrPlusClient"/>
 
 </beans>
