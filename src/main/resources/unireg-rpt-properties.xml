@@ -16,10 +16,10 @@
 		<property name="fileEncoding" value="UTF-8"/>
 		<property name="locations">
 			<list>
-				<value>file:${unireg-rpt-web.properties.path}</value>
-				<value>file:${unireg-rpt-nexus.properties.path}</value>
-				<value>file:${unireg-rpt.properties.path}</value>
-				<value>file:${unireg-rpt.credentials.path}</value>
+				<value>file:${ch.vd.unireg.propertyFolder}/unireg-web.properties</value>
+				<value>file:${ch.vd.unireg.propertyFolder}/unireg-nexus.properties</value>
+				<value>file:${ch.vd.unireg.propertyFolder}/unireg-rpt.properties</value>
+				<value>file:${ch.vd.unireg.propertyFolder}/credentials.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -27,7 +27,7 @@
 	<!-- Ce bean offre la possibilité d'accéder directement aux propriétés externes depuis le code java -->	
 	<bean id="uniregExternalProperties" class="ch.vd.unireg.utils.UniregPropertiesImpl">
 		<property name="fileEncoding" value="UTF-8"/>
-		<property name="filename" value="${unireg-rpt-web.properties.path}" />
+		<property name="filename" value="${ch.vd.unireg.propertyFolder}/unireg-web.properties" />
 	</bean>
 
 </beans>
