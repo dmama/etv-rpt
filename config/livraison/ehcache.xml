@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd"
+         updateCheck="false" monitoring="off">
+	<!-- Sets the path to the directory where cache .data files are created. If the path is a Java System Property it is replaced by 
+		its value in the running VM.
+		The following properties are translated: 
+		user.home - User's home directory
+		user.dir - User's current working directory
+		java.io.tmpdir - Default temp file path 
+	-->
+	<diskStore path="java.io.tmpdir/rpt/ehcache" />
+
+	<!--Default Cache configuration. These will applied to caches programmatically created through
+		the CacheManager.
+
+		The following attributes are required for defaultCache:
+
+		maxInMemory       - Sets the maximum number of objects that will be created in memory
+		eternal           - Sets whether elements are eternal. If eternal,  timeouts are ignored and the element
+							is never expired.
+		timeToIdleSeconds - Sets the time to idle for an element before it expires.
+							i.e. The maximum amount of time between accesses before an element expires
+							Is only used if the element is not eternal.
+							Optional attribute. A value of 0 means that an Element can idle for infinity
+		timeToLiveSeconds - Sets the time to live for an element before it expires.
+							i.e. The maximum time between creation time and when an element expires.
+							Is only used if the element is not eternal.
+		overflowToDisk    - Sets whether elements can overflow to disk when the in-memory cache
+							has reached the maxInMemory limit.
+
+		-->
+	<defaultCache maxEntriesLocalHeap="10000"
+	              overflowToDisk="true"
+	              timeToIdleSeconds="120"
+	              timeToLiveSeconds="120"
+	              diskPersistent="true"
+	              diskExpiryThreadIntervalSeconds="120" />
+
+	<cache name="serviceCivil"
+	       maxEntriesLocalHeap="1000"
+	       timeToIdleSeconds="500"
+	       timeToLiveSeconds="500"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="entrepriseConnector"
+	       maxEntriesLocalHeap="1000"
+	       timeToIdleSeconds="500"
+	       timeToLiveSeconds="500"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="servicePM"
+	       maxEntriesLocalHeap="2500"
+	       timeToIdleSeconds="500"
+	       timeToLiveSeconds="500"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="infraConnector"
+	       maxEntriesLocalHeap="10000"
+	       timeToIdleSeconds="86400"
+	       timeToLiveSeconds="86400"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="infraConnectorShortLived"
+	       maxEntriesLocalHeap="200"
+	       timeToIdleSeconds="3600"
+	       timeToLiveSeconds="3600"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="securiteConnector"
+	       maxEntriesLocalHeap="2000"
+	       timeToIdleSeconds="3600"
+	       timeToLiveSeconds="3600"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="serviceSecurite"
+	       maxEntriesLocalHeap="1000"
+	       timeToIdleSeconds="3600"
+	       timeToLiveSeconds="3600"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="securityProvider"
+	       maxEntriesLocalHeap="1000"
+	       timeToIdleSeconds="3600"
+	       timeToLiveSeconds="3600"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="autorisationsCache"
+	       maxEntriesLocalHeap="1000"
+	       timeToIdleSeconds="3600"
+	       timeToLiveSeconds="3600"
+	       overflowToDisk="false"
+	/>
+
+	<cache name="refSecClient"
+	       maxEntriesLocalHeap="2000"
+	       timeToIdleSeconds="3600"
+	       timeToLiveSeconds="3600"
+	       overflowToDisk="false"
+	/>
+
+</ehcache>
