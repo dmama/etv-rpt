@@ -28,36 +28,7 @@
 		<property name="inboxService" ref="inboxService" />
 	</bean>
 
-	<bean id="editiqueCompositionService" class="ch.vd.unireg.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">
-		<property name="editiqueService" ref="editiqueService" />
-		<property name="impressionDIPPHelper" ref="impressionDIPPHelper" />
-		<property name="impressionDIPMHelper" ref="impressionDIPMHelper"/>
-		<property name="impressionLRHelper" ref="impressionLRHelper" />
-		<property name="impressionSommationDIPPHelper" ref="impressionSommationDIPPHelper" />
-		<property name="impressionSommationDIPMHelper" ref="impressionSommationDIPMHelper" />
-		<property name="impressionSommationLRHelper" ref="impressionSommationLRHelper" />
-		<property name="impressionNouveauxDossiersHelper" ref="impressionNouveauxDossiersHelper" />
-		<property name="impressionConfirmationDelaiPPHelper" ref="impressionConfirmationDelaiPPHelper" />
-		<property name="impressionLettreDecisionDelaiPMHelper" ref="impressionLettreDecisionDelaiPMHelper"/>
-		<property name="impressionLettreDecisionDelaiPPHelper" ref="impressionLettreDecisionDelaiPPHelper"/>
-		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
-		<property name="serviceSecurite" ref="serviceSecuriteService" />
-		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />
-		<property name="impressionLettreBienvenueHelper" ref="impressionLettreBienvenueHelper"/>
-		<property name="impressionRappelHelper" ref="impressionRappelHelper"/>
-		<property name="impressionQSNCHelper" ref="impressionQSNCHelper"/>
-		<property name="impressionRappelQSNCHelper" ref="impressionRappelQSNCHelper"/>
-		<property name="impressionAutorisationRadiationRCHelper" ref="impressionAutorisationRadiationRCHelper"/>
-		<property name="signatairesAutorisationRadiationRC" ref="signatairesAutorisationRadiation"/>
-		<property name="impressionDemandeBilanFinalHelper" ref="impressionDemandeBilanFinalHelper"/>
-		<property name="impressionLettreTypeInformationLiquidationHelper" ref="impressionLettreTypeInfoLiquidationHelper"/>
-		<property name="impressionDemandeDegrevementICIHelper" ref="impressionDemandeDegrevementICIHelper"/>
-		<property name="impressionRappelDemandeDegrevementICIHelper" ref="impressionRappelDemandeDegrevementICIHelper"/>
-		<property name="evenementDocumentSortantService" ref="evenementDocumentSortantService"/>
-		<property name="impressionFourreNeutreHelper" ref="impressionFourreNeutreHelper"/>
-		<property name="impressionDelaiQSNCHelper" ref="impressionDelaiQSNCHelper"/>
-		<property name="infraService" ref="serviceInfrastructureService"/>
-	</bean>
+	<bean id="editiqueCompositionService" class="ch.vd.unireg.editique.mock.MockEditiqueCompositionService" lazy-init="true"/>
 
 	<bean id="signatairesAutorisationRadiation" class="ch.vd.unireg.documentfiscal.Signataires">
 		<constructor-arg>
