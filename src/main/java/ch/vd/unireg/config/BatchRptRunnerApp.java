@@ -39,7 +39,6 @@ public final class BatchRptRunnerApp {
 	}
 
 
-
 	/**
 	 * Méthode de démarrage du batch.
 	 *
@@ -56,10 +55,20 @@ public final class BatchRptRunnerApp {
 
 		LOGGER.info("---- BATCH D'EXTRACTION RPT UNIREG - DEBUT DU TRAITEMENT ------------------------------------");
 		LOGGER.info("Parametres  du batch {}: ", PROPERTIES_INSTANCE.getJobName());
-		LOGGER.info("Periode Fiscale = {}, mode = {}  ", PROPERTIES_INSTANCE.getPeriodeFiscale(), PROPERTIES_INSTANCE.getModeExtraction());
+		LOGGER.info("Periode Fiscale = {}, mode = {}  ", PROPERTIES_INSTANCE.getPeriodeFiscale(), "PP".equalsIgnoreCase(PROPERTIES_INSTANCE.getPopulation()) ? PROPERTIES_INSTANCE.getTypeExtraction() : PROPERTIES_INSTANCE.getModeExtraction());
 
 		try {
-			demarrerBatch();
+			//injection des informations d'authentifications.
+			AuthenticationHelper.pushPrincipal("RPT-Batch");
+
+			//démarrage du job
+			final JobDefinition jobDefinition = demarrerJob();
+
+			// on attend la fin de l'execution du job
+			while (jobDefinition.isRunning()) {
+				//noop just wait
+			}
+			AuthenticationHelper.popPrincipal();
 			stopWatch.stop();
 			LOGGER.info("BATCH D'EXTRACTION RPT UNIREG - FIN DU TRAITEMENT {}. Duree = {} sec.", PROPERTIES_INSTANCE.getJobName(), formatMsToSecondes(stopWatch.getLastTaskTimeMillis()));
 			System.exit(0);
@@ -68,19 +77,17 @@ public final class BatchRptRunnerApp {
 			stopWatch.stop();
 			System.err.println("Erreur d'execution .  Raison: " + exp.getMessage());
 			LOGGER.error("Erreur d'execution .  Raison: {}", exp.getMessage());
+			AuthenticationHelper.popPrincipal();
 			System.exit(1);
 		}
 
 	}
 
 
-	private static void demarrerBatch() throws BatchSystemException {
+	private static JobDefinition demarrerJob() throws BatchSystemException {
 		// Chargement du context Spring.
 		LOGGER.info("Chargement du context Spring");
 		final ApplicationContext context = new ClassPathXmlApplicationContext("unireg-all-module.xml");
-
-		//injection des informations d'authentifications.
-		AuthenticationHelper.pushPrincipal("RPT-Batch");
 
 		try {
 			final Map<String, Object> params = new HashMap<>();
@@ -97,14 +104,10 @@ public final class BatchRptRunnerApp {
 
 			// Chargement du batchScheduler depuis le context.
 			final BatchScheduler batchScheduler = context.getBean("batchScheduler", BatchSchedulerImpl.class);
-			batchScheduler.startJob(PROPERTIES_INSTANCE.getJobName(), params);
+			return batchScheduler.startJob(PROPERTIES_INSTANCE.getJobName(), params);
 		}
 		catch (Exception exp) {
 			throw new BatchSystemException(exp.getMessage(), exp);
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
-
 		}
 	}
 
