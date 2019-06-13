@@ -7,5 +7,18 @@
 		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
 
+	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">
+		<property name="target" ref="individuConnectorRCPers" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorPersistentCache">
+		<property name="target" ref="individuConnectorTracing" />
+		<property name="cache" ref="civilBerkeleyCache" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="individuConnector" name="individuConnectorCache"/>
 
 </beans>

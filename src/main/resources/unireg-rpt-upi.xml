@@ -6,4 +6,16 @@
 		<property name="client" ref="rcPersClient" />
 		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
+
+	<bean id="upiConnectorTracing" class="ch.vd.unireg.interfaces.upi.UpiConnectorTracing">
+		<property name="target" ref="upiConnectorRCPers" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+<!--	<bean id="upiConnectorEndPoint" class="ch.vd.unireg.interfaces.upi.UpiConnectorEndPoint">
+		<property name="target" ref="upiConnectorTracing" />
+	</bean>-->
+
+	<alias alias="upiConnector" name="upiConnectorTracing"/>
+
 </beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--<bean id="statsService" class="ch.vd.unireg.stats.StatsServiceImpl" />-->
+
+<!--	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl" />-->
+
+	<bean id="civilDataEventNotifier" class="ch.vd.unireg.data.CivilDataEventNotifierImpl">
+		<constructor-arg>
+			<list>
+				<ref bean="individuConnectorCache" />
+				<ref bean="entrepriseConnectorCache" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+</beans>
