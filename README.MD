@@ -18,7 +18,7 @@ permet de générer le  unireg-rpt-batch-@version-release.zip
 * [FACULTATIF] version de ws utilisée, valeur par défaut v7.  Valeurs possibles (v6,v7) exemple -Dversion_ws=v7
 version_ws=v7
 
-***Lancement du batch à partir des scripts :***
+***Lancement du batch :***
 Lancement du batch de clôture
 * En local :
   * Modifier les fichier de config : unireg-metier.properties, unireg-rpt.properties, unireg.nexus.properties et unireg-web.properties
