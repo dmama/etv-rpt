@@ -19,11 +19,11 @@ permet de générer le  unireg-rpt-batch-@version-release.zip
 version_ws=v7
 
 ***Lancement du batch :***
-Lancement du batch de clôture
+Lancement du batch RPT
 * En local :
   * Modifier les fichier de config : unireg-metier.properties, unireg-rpt.properties, unireg.nexus.properties et unireg-web.properties
   * VM Options : -Dch.vd.unireg.propertyFolder="C:\projects\unireg-rpt-batch\config\devel" -Dlog4j.configurationFile="C:\projects\unireg-rpt-batch\config\rpt-log4j2.xml" -Dch.vd.appDir="C:\projects\unireg-rpt-batch\"
   * Program arguments : "C:\projects\unireg-rpt-batch\config\devel\unireg-metier.properties"
 * En intégration :
-  * TODO selon monde DevEx
+  * TODO selon mode de livraison DevEx
 
