@@ -24,7 +24,7 @@ import ch.vd.unireg.listes.afc.pm.VersionWS;
 
 
 /**
- * Classe permettant d'acceder aux propriétés du batch de cloture automatique
+ * Classe permettant d'acceder aux proprietes du batch de cloture automatique
  */
 public final class BatchRptProperties extends AbstractProperties {
 
@@ -54,14 +54,14 @@ public final class BatchRptProperties extends AbstractProperties {
 
 
 	/**
-	 * Constructeur privé pour empêcher l'instanciation.
+	 * Constructeur privÃ© pour empÃªcher l'instanciation.
 	 */
 	private BatchRptProperties() {
 		super(LOG);
 	}
 
 	/**
-	 * @return la période fiscale spécifiée dans le fichier de propriétés.
+	 * @return la pÃ©riode fiscale spÃ©cifiÃ©e dans le fichier de propriÃ©tÃ©s.
 	 */
 	public Long getPeriodeFiscale() {
 		Long periodeFiscale;
@@ -75,7 +75,7 @@ public final class BatchRptProperties extends AbstractProperties {
 			periodeFiscale = Long.valueOf(propertyValue);
 		}
 		catch (NumberFormatException e) {
-			throw new BatchSystemException("Le format de la période fiscale est incorrect. [propriété : " + PROP_NAME_PERIODE_FISCALE + "].", e);
+			throw new BatchSystemException("Le format de la pÃ©riode fiscale est incorrect. [propriÃ©tÃ© : " + PROP_NAME_PERIODE_FISCALE + "].", e);
 		}
 
 		return periodeFiscale;
@@ -85,7 +85,7 @@ public final class BatchRptProperties extends AbstractProperties {
 		String propertyValue = getProperty(PROP_NAME_POPULATION);
 
 		if (StringUtils.isBlank(propertyValue)) {
-			throw new BatchSystemException("La propriété [" + PROP_NAME_POPULATION + "] doit obligatoirement être définie.");
+			throw new BatchSystemException("La propriÃ©tÃ© [" + PROP_NAME_POPULATION + "] doit obligatoirement Ãªtre dÃ©finie.");
 		}
 		return propertyValue;
 	}
@@ -102,7 +102,7 @@ public final class BatchRptProperties extends AbstractProperties {
 			mode = StringUtils.isNotBlank(propertyValue) ? ModeExtraction.valueOf(propertyValue) : ModeExtraction.BENEFICE;
 		}
 		catch (IllegalArgumentException ex) {
-			throw new BatchSystemException("La propriété [" + PROP_NAME_MODE + "] doit  être définie avec la bonne valeur.");
+			throw new BatchSystemException("La propriÃ©tÃ© [" + PROP_NAME_MODE + "] doit  Ãªtre dÃ©finie avec la bonne valeur.");
 		}
 		return mode;
 	}
@@ -115,7 +115,7 @@ public final class BatchRptProperties extends AbstractProperties {
 			mode = StringUtils.isNotBlank(propertyValue) ? TypeExtractionDonneesRpt.valueOf(propertyValue) : TypeExtractionDonneesRpt.REVENU_ORDINAIRE;
 		}
 		catch (IllegalArgumentException ex) {
-			throw new BatchSystemException("La propriété [" + PROP_NAME_MODE + "] doit  être définie avec la bonne valeur.");
+			throw new BatchSystemException("La propriÃ©tÃ© [" + PROP_NAME_MODE + "] doit  Ãªtre dÃ©finie avec la bonne valeur.");
 		}
 		return mode;
 	}
@@ -128,14 +128,14 @@ public final class BatchRptProperties extends AbstractProperties {
 			versionWS = StringUtils.isNotBlank(version_ws) ? VersionWS.valueOf(StringUtils.upperCase(version_ws)) : VersionWS.V7;
 		}
 		catch (IllegalArgumentException ex) {
-			throw new BatchSystemException("La propriété [" + PROP_NAME_WS + "] doit  être définie avec la bonne valeur.");
+			throw new BatchSystemException("La propriÃ©tÃ© [" + PROP_NAME_WS + "] doit  Ãªtre dÃ©finie avec la bonne valeur.");
 		}
 		return versionWS;
 	}
 
 
 	/**
-	 * Traitement particulier pour récupérer le fichier de config
+	 * Traitement particulier pour rÃ©cupÃ©rer le fichier de config
 	 *
 	 * @return
 	 */
@@ -151,7 +151,7 @@ public final class BatchRptProperties extends AbstractProperties {
 				}
 				catch (IOException var5) {
 					this.properties = null;
-					throw new BatchSystemException("[" + nomFichier + "] impossible d'accéder au fichier de propriétés", var5);
+					throw new BatchSystemException("[" + nomFichier + "] impossible d'accÃ©der au fichier de propriÃ©tÃ©s", var5);
 				}
 			}
 		}
@@ -164,7 +164,7 @@ public final class BatchRptProperties extends AbstractProperties {
 	}
 
 	/**
-	 * @return le nombre de threads à utiliser
+	 * @return le nombre de threads Ã  utiliser
 	 */
 	public final int getNombreThreads() {
 		return Integer.parseInt(getProperty(NOMBRE_THREADS));

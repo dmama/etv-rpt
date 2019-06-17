@@ -52,6 +52,8 @@
 		<cei-maven-plugin.version>1.1.0</cei-maven-plugin.version>
 		<local.distribution.artifact.file>${project.build.directory}/${dist.app.name}.zip</local.distribution.artifact.file>
 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 
 	</properties>
 
@@ -216,7 +218,7 @@
 					<encoding>UTF-8</encoding>
 					<source>1.8</source>
 					<target>1.8</target>
-					<showDeprecation>true</showDeprecation>
+
 				</configuration>
 			</plugin>
 			<plugin>
