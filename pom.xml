@@ -13,7 +13,6 @@
 	<description>Projet maven du batchs d'extraction RPT de l'application UNIREG</description>
 
 
-
 	<issueManagement>
 		<system>jira</system>
 		<url>http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC</url>
@@ -319,7 +318,7 @@
 				</executions>
 			</plugin>
 
-<!--  https://stackoverflow.com/questions/21474223/xmlbeandefinitionstoreexception-cannot-find-the-declaration-of-element-beans/21474944-->
+			<!--  https://stackoverflow.com/questions/21474223/xmlbeandefinitionstoreexception-cannot-find-the-declaration-of-element-beans/21474944-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -360,6 +359,24 @@
 				<version>2.8.2</version>
 				<configuration>
 					<skip>true</skip>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				<configuration>
+					<!-- Ajout de variables utilisables dans le code java. -->
+					<systemPropertyVariables>
+						<argLine>-Dfile.encoding=UTF-8</argLine>
+						<!--  variable qui indique le path du repertoire du project -->
+						<ch.vd.appDir>${project.basedir}</ch.vd.appDir>
+						<!--  variable qui indique le path du repertoire de configuration -->
+						<ch.vd.unireg.propertyFolder>${project.basedir}/config/devel</ch.vd.unireg.propertyFolder>
+						<!--  variable qui indique le path du repertoire de configuration du log4j-->
+						<log4j.configurationFile>${project.basedir}/config/rpt-log4j2.xml</log4j.configurationFile>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 
