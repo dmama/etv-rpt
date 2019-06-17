@@ -8,7 +8,6 @@
 
 	<bean id="infrastructureConnectorFidor" class="ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor">
 		<property name="fidorClient" ref="fidorClient" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<!-- rétro-couplage de la mort, mais c'est nécessaire pour ne pas tuer les performances pour résoudre les rues et les localités sur les adresses... -->
 		<property name="cachedInfraConnector" ref="infrastructureConnectorCache"/>
 		<property name="regimesFiscauxBlacklist" value="${extprop.webservice.fidor.regimes.fiscaux.blacklist}"/>
@@ -36,7 +35,6 @@
 				<constructor-arg value="infraConnectorShortLived" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

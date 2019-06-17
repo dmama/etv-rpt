@@ -13,14 +13,14 @@
 				<constructor-arg value="securiteConnector" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
 <!--	<bean id="securiteConnectorEndPoint" class="ch.vd.unireg.interfaces.securite.SecuriteConnectorEndPoint">
 		<property name="target" ref="securiteConnectorCache" />
 	</bean>-->
-
+<!-- TODO: revoir la gestion de nom entre securiteConnectorCache vs serviceSecuriteCache -->
 	<alias alias="securiteConnector" name="securiteConnectorCache"/>
+	<!--<alias alias="securiteConnector" name="securiteConnectorRefSec"/>-->
 
 </beans>

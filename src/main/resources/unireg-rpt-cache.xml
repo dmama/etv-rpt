@@ -6,6 +6,20 @@
 		<property name="configLocation" value="file:${extprop.ehcache.file}" />
 	</bean>
 
+	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl">
+		<constructor-arg>
+			<map>
+				<!-- nexus-->
+				<entry key="INDIVIDU-PERSISTENT" value-ref="individuConnectorCache"/>
+				<entry key="ENTREPRISE-PERSISTENT" value-ref="entrepriseConnectorCache"/>
+				<entry key="INFRA" value-ref="infrastructureConnectorCache"/>
+				<entry key="URLS-FIDOR" value-ref="infrastructureConnectorFidor"/>
+				<entry key="SECURITE" value-ref="securiteConnectorCache"/>
+			</map>
+		</constructor-arg>
+	</bean>
+
+
 	<bean id="civilBerkeleyCache" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
 		<property name="homeDirectory" value="${extprop.civil.cache.homedir}" />
 		<property name="clazz" value="ch.vd.unireg.interfaces.civil.cache.IndividuCacheValueWithParts" />

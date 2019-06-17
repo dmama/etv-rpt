@@ -28,7 +28,6 @@
 		<property name="target" ref="entrepriseConnectorTracing" />
 		<property name="cache" ref="entreprisePersistentCache" />
 		<property name="etablissementCache" ref="etablissementCivilPersistentCache" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
