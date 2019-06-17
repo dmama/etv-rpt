@@ -90,13 +90,6 @@
 			<version>${unireg-project.version}</version>
 		</dependency>
 
-		<!-- Dependances application TAO -->
-		<dependency>
-			<groupId>ch.vd.dfin.tao</groupId>
-			<artifactId>tao-batch-common-ind</artifactId>
-			<version>1.6</version>
-		</dependency>
-
 		<!-- Librairie brave to capture latency information  -->
 		<dependency>
 			<groupId>io.zipkin.brave</groupId>
@@ -164,6 +157,12 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

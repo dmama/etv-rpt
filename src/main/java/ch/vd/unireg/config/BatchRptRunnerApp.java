@@ -13,8 +13,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StopWatch;
 
-import ch.vd.dfin.tao.batch.common.ind.exception.BatchSystemException;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.exception.BatchSystemException;
 import ch.vd.unireg.listes.afc.ExtractionDonneesRptJob;
 import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMJob;
 import ch.vd.unireg.scheduler.BatchScheduler;

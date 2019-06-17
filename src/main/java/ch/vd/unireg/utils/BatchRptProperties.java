@@ -11,11 +11,11 @@ import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ch.vd.dfin.tao.batch.common.ind.exception.BatchSystemException;
-import ch.vd.dfin.tao.batch.common.ind.util.BatchProperties;
-import ch.vd.dfin.tao.batch.common.ind.util.PropertiesFile;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.exception.BatchSystemException;
 import ch.vd.unireg.listes.afc.ExtractionDonneesRptJob;
 import ch.vd.unireg.listes.afc.TypeExtractionDonneesRpt;
 import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMJob;
@@ -26,7 +26,9 @@ import ch.vd.unireg.listes.afc.pm.VersionWS;
 /**
  * Classe permettant d'acceder aux propriétés du batch de cloture automatique
  */
-public final class BatchRptProperties extends BatchProperties {
+public final class BatchRptProperties extends AbstractProperties {
+
+	private static final Logger LOG = LoggerFactory.getLogger(BatchRptProperties.class);
 
 	private static final String PROP_NAME_PERIODE_FISCALE = "rpt.periode.fiscale";
 
@@ -35,6 +37,8 @@ public final class BatchRptProperties extends BatchProperties {
 	private static final String PROP_NAME_MODE = "rpt.mode";
 
 	private static final String PROP_NAME_WS = "rpt.version.ws";
+
+	private static final String NOMBRE_THREADS = "nombre.threads";
 
 	/**
 	 * L'unique instance de ce singleton.
@@ -53,7 +57,7 @@ public final class BatchRptProperties extends BatchProperties {
 	 * Constructeur privé pour empêcher l'instanciation.
 	 */
 	private BatchRptProperties() {
-		// noop.
+		super(LOG);
 	}
 
 	/**
@@ -157,6 +161,13 @@ public final class BatchRptProperties extends BatchProperties {
 
 	public String getPropertiesFileName() {
 		return "unireg-metier.properties";
+	}
+
+	/**
+	 * @return le nombre de threads à utiliser
+	 */
+	public final int getNombreThreads() {
+		return Integer.parseInt(getProperty(NOMBRE_THREADS));
 	}
 
 
