@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ch.vd.unireg</groupId>
-	<artifactId>unireg-rpt</artifactId>
+	<artifactId>unireg-batch-rpt</artifactId>
 	<version>19R3.A.0-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
-	<name>unireg - Rpt</name>
+	<name>unireg-batch-rpt</name>
 	<description>Projet maven du batchs d'extraction RPT de l'application UNIREG</description>
 
 
@@ -402,9 +402,9 @@
 	<!-- ###### SCM : Source Control Management ###### -->
 	<!-- définition de l'url de connection au serveur GIT pour le projet -->
 	<scm>
-		<connection>scm:git:ssh://git@bitbucket.etat-de-vaud.ch/fisc/unireg-rpt-batch.git</connection>
-		<developerConnection>scm:git:ssh://git@bitbucket.etat-de-vaud.ch/fisc/unireg-rpt-batch.git</developerConnection>
-		<url>https://portail.etat-de-vaud.ch/outils/git/projects/FISC/repos/unireg-rpt-batch/browse</url>
+		<connection>scm:git:ssh://git@bitbucket.etat-de-vaud.ch/fisc/unireg-batch-rpt.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.etat-de-vaud.ch/fisc/unireg-batch-rpt.git</developerConnection>
+		<url>https://portail.etat-de-vaud.ch/outils/git/projects/FISC/repos/unireg-batch-rpt/browse</url>
 		<tag>HEAD</tag>
 	</scm>
 </project>
