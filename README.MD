@@ -7,7 +7,7 @@ Avant d'exécuter le projet les librairies suivantes sont nécessaires:
 
 installer toutes les dependencies:
 ```mvn clean install ```
-permet de générer le  unireg-rpt-batch-@version-release.zip 
+permet de générer le  unireg-batch-rpt-@version-zip.zip 
 
 ##Run
 * [OBLIGATOIRE]  population=PM,  Type de population : PM, PP
